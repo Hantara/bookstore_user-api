@@ -2,6 +2,7 @@ package users
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/Hantara/bookstore_user-api/domain/users"
 	"github.com/Hantara/bookstore_user-api/services"
@@ -11,7 +12,19 @@ import (
 
 //GetUser controller untuk melakukan reply
 func GetUser(c *gin.Context) {
-	c.String(http.StatusNotImplemented, "Under development")
+	userID, userErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if userErr != nil {
+		err := errors.NewBadRequestError("user_id should be a number")
+		c.JSON(err.Status, err)
+		return
+	}
+
+	user, getErr := services.GetUser(userID)
+	if getErr != nil {
+		c.JSON(getErr.Status, getErr)
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
 
 //CreateUser controller untuk melakukan reply
