@@ -1,13 +1,11 @@
 package users
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/Hantara/bookstore_user-api/domain/users"
 	"github.com/Hantara/bookstore_user-api/services"
+	"github.com/Hantara/bookstore_user-api/utils/errors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,29 +17,17 @@ func GetUser(c *gin.Context) {
 //CreateUser controller untuk melakukan reply
 func CreateUser(c *gin.Context) {
 	var user users.User
-	fmt.Println(user)
-	bytes, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		//TODO: handle error
-		fmt.Println("byteskosong")
-		fmt.Println(err.Error())
-		return
-	}
-	if err := json.Unmarshal(bytes, &user); err != nil {
-		//TODO: handle json error
-		fmt.Println("json")
-		fmt.Println(err.Error())
-		return
-	}
-
+	//TODO : handle json return bad request
 	if err := c.ShouldBindJSON(&user); err != nil {
-		
+		restErr := errors.NewBadRequestError("Invalid json body")
+		c.JSON(restErr.Status, restErr)
+
+		return
 	}
 	result, saveErr := services.CreateUser(user)
 	if saveErr != nil {
 		//TODO : handle create user error
-		fmt.Println("createuser")
-		fmt.Println(err.Error())
+		c.JSON(saveErr.Status, saveErr)
 		return
 	}
 	c.JSON(http.StatusCreated, result)
