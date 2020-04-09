@@ -14,6 +14,15 @@ func NewBadRequestError(message string) *RestErr {
 	return &RestErr{
 		Message: message,
 		Status:  http.StatusBadRequest,
-		Error:   "Bad Request",
+		Error:   "Bad_Request",
+	}
+}
+
+//NewNotFoundError mengembalikan template
+func NewNotFoundError(message string) *RestErr {
+	return &RestErr{
+		Message: message,
+		Status:  http.StatusNotFound,
+		Error:   "Not_found",
 	}
 }
